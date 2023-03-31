@@ -22,12 +22,15 @@ const query = util.promisify(connection.query).bind(connection);
 const CreateDataInTable = async (obj) => {
     try {
 
-        let d =await query(`SHOW VARIABLES LIKE 'max_allowed_packet';`)
+        await query(`SET FOREIGN_KEY_CHECKS=0`)
+        
         const rows = obj.map((data) => [data.lng, data.lat, data.post_code, data.city_id, data.created_at, data.updated_at]);
         
         const sql = `INSERT INTO post_codes (lng, lat, post_code, city_id , created_at, updated_at) VALUES ?`;
         await query(sql, [rows])
         console.log('DONE WITH BULK UPLOADING')
+        await query(`SET FOREIGN_KEY_CHECKS=1`)
+        
     } catch (error) {
         console.log(error)
     } finally {
